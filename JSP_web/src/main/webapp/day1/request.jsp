@@ -8,7 +8,8 @@
 </head>
 <body>
 
-	<%=request.getParameter("userId")%>
+	<div> id : <%=request.getParameter("userId")%></div>
+	<div> age : <%=request.getParameter("age")%></div>
 	
 </body>
 </html>
