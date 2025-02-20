@@ -8,8 +8,25 @@
 </head>
 <body>
 
-	<div> id : <%=request.getParameter("id")%></div>
-	<div> pwd : <%=request.getParameter("pwd")%></div>
+	
+	
+	
+	<%
+		String id = request.getParameter("id");
+		String pwd = 	request.getParameter("pwd");
+		
+		
+		
+		if (id.equals("test") && pwd.equals("1234")) {
+       		out.println("로그인 성공");	
+       		response.sendRedirect("main-include.jsp");
+		} else { 
+			out.println("로그인 실패");
+			response.sendRedirect("login.jsp");
+		}
+		
+	%>
+	
 	
 </body>
 </html>
