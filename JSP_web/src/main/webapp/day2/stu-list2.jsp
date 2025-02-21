@@ -41,7 +41,7 @@
 
     <tr>
     	<td><input type="radio" name="sel" value="<%=rs.getString("stu_no")  %>" /> </td>  
-        <td><%=rs.getString("stu_no") %></td>
+        <td><%=rs.getString("stu_no") %> </td>
         <td><a href="stu-view.jsp?stu_no=<%=rs.getString("stu_no")%>"><%=rs.getString("stu_name") %></a></td>
         <td><%=rs.getString("stu_dept") %></td>
         <td><%if(rs.getString("stu_gender").equals("M")){ out.print("남자"); } else { out.print("여자");} %></td>
