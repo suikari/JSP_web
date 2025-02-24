@@ -103,7 +103,9 @@
 		}
 		pagecnt = (int)Math.ceil((double)pagetotSize/pageSize);
 		
-		ResultSet rs = stmt.executeQuery("Select * from board "
+		ResultSet rs = stmt.executeQuery("Select b.boardno , b.title, b.userid, b.cnt, b.cdatetime , nvl(com_cnt,0) from board b "
+				+" left join ( select count (*) com_cnt, boardno from board_comment	group by boardno ) bc "
+				+" on b.boardno = bc.boardno; " 
 				+" OFFSET "+ lastnum +" ROWS FETCH NEXT " + pageSize + " ROWS ONLY   ");
 		//학번 이름 학과 성별 (남자,여자)
 		
