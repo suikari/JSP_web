@@ -39,6 +39,9 @@
 	
 	int pageSize = 5; // 페이지 사이즈
 	int currentPage = 1;
+	String sql = "";
+	String count_sql = "";
+	String keyword = "";
 	try {
 		currentPage = Integer.parseInt(request.getParameter("currentnum"));
 	} catch ( Exception e) {
@@ -58,8 +61,27 @@
 	int pagecnt = 0;
 	String paginglist = "3,5,10,15,20" ;
 	
+	
+	String sql_where = "";
+	
+	
+	if(request.getParameter("keyword") != null){
+		keyword = request.getParameter("keyword");
+	}
+	
+	if ( keyword != null || keyword != "") {
+		sql_where = " where title like '%" + keyword + "%'";
+	}
+	
+
 %>
-<select id="board_pagenum" class="board_pagenum" onchange="fnTest(this.value)" >
+<div>
+	<input id = "keyword" type="text" placeholder="검색어" value="<%=keyword%>">
+	<button onclick="fnSearch('<%=pageSize %>');"> 검색 </button>
+	
+</div>
+
+<select id="board_pagenum" class="board_pagenum" onchange="fnTest(this.value,'<%=keyword%>')" >
 	
 
 <%
@@ -93,8 +115,10 @@
 
 	
 	try{
-		
-		ResultSet rs1 = stmt.executeQuery("Select count(*) cnt from board ");
+		count_sql = "Select count(*) cnt from board" + sql_where ;
+		//out.print(count_sql);
+
+		ResultSet rs1 = stmt.executeQuery(count_sql);
 		
 		if(rs1.next()){ 
 			pagetotSize = rs1.getInt("cnt");
@@ -103,10 +127,14 @@
 		}
 		pagecnt = (int)Math.ceil((double)pagetotSize/pageSize);
 		
-		ResultSet rs = stmt.executeQuery("Select b.boardno , b.title, b.userid, b.cnt, b.cdatetime , nvl(com_cnt,0) from board b "
+		sql = "Select b.boardno , b.title, b.userid, b.cnt, b.cdatetime , nvl(com_cnt,0) from board b "
 				+" left join ( select count (*) com_cnt, boardno from board_comment	group by boardno ) bc "
-				+" on b.boardno = bc.boardno " 
-				+" OFFSET "+ lastnum +" ROWS FETCH NEXT " + pageSize + " ROWS ONLY   ");
+				+" on b.boardno = bc.boardno "
+				+ sql_where 
+				+" OFFSET "+ lastnum +" ROWS FETCH NEXT " + pageSize + " ROWS ONLY   ";
+		//out.print(sql);
+		
+		ResultSet rs = stmt.executeQuery(sql);
 		//학번 이름 학과 성별 (남자,여자)
 		
 		while(rs.next()) {
@@ -131,7 +159,7 @@
 <%	
 		if (currentPage != 1) {
 %>
-			<a href="?currentnum=<%=currentPage-1%>&selectnum=<%=pageSize%>"><span class="active"> << </span></a>
+			<a href="?currentnum=<%=currentPage-1%>&selectnum=<%=pageSize%>&keyword=<%=keyword %>"><span class="active"> << </span></a>
 <%
 		}
 				
@@ -145,7 +173,7 @@
 				<%							
 			} else {
 				%>
-					<a href="?currentnum=<%=i%>&selectnum=<%=pageSize%>"><span> <%=i %> </span></a>
+					<a href="?currentnum=<%=i%>&selectnum=<%=pageSize%>&keyword=<%=keyword %>"><span> <%=i %> </span></a>
 				<%							
 			}
 
@@ -153,7 +181,7 @@
 		
 		if (currentPage != pagecnt ) {
 %>
-			<a href="?currentnum=<%=currentPage+1%>&selectnum=<%=pageSize%>"><span class="active"> >> </span></a>
+			<a href="?currentnum=<%=currentPage+1%>&selectnum=<%=pageSize%>&keyword=<%=keyword %>"><span class="active"> >> </span></a>
 <%
 		}		
 		
@@ -174,6 +202,9 @@
 </html>
 
 <script>
+
+	alert('<%=keyword%>');
+	
 	function fnStuRemover(){
 		let select = document.querySelector('input[name="sel"]:checked').value;
 		
@@ -182,12 +213,15 @@
 		
 	}
 	
-	function fnTest (pageval){
-		location.href = "?currentnum=1&selectnum="+pageval ;
+	function fnTest (pageval, keyword){
+		location.href = "?currentnum=1&selectnum="+pageval +"&keyword=" + keyword ;
 		
 		console.log(pageval);
-
-		
+	}
+	
+	function fnSearch( pageval ) {
+		let keyword = document.querySelector("#keyword").value;
+		location.href="?currentnum=1&selectnum="+pageval + "&keyword="+keyword;
 	}
 	
 </script>
